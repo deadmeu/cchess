@@ -119,49 +119,50 @@ int is_piece_move_legal(int x1, int y1, int x2, int y2, int** board) {
     int isLegal = 0;
     switch (thisPieceType) {
         case 'P':   // Pawn
-            // check if moved backwards (illegal)
-            if ((thisPieceColor == WHITE && (y2 - y1) < 1) ||
-                (thisPieceColor == BLACK && (y1 - y2) < 1)) {
-                break;
-            }
-
-            // check if only moved forwards by one space (legal)
-            if (x2 - x1 == 0 && ((thisPieceColor == WHITE && (y2 - y1) == 1) ||
-                                (thisPieceColor == BLACK && (y1 - y2) == 1)) &&
-                                !(check_for_collision(x1, y1, x2, y2, board))) {
-                isLegal = 1;
-                break;
-            }
-
-            // check if on second (relative) rank for first double move
-            if (x2 - x1 == 0 && ((thisPieceColor == WHITE && (y2 - y1) > 1) ||
-                                (thisPieceColor == BLACK && (y1 - y2) > 1)) &&
-                                !(check_for_collision(x1, y1, x2, y2, board))) {
-                if (y2 - y1 == 2) {
-                    if (y1 == 2) {
-                        isLegal = 1;
-                    }
-                }
-                break;
-            } else if (thisPieceColor == BLACK && (y1 - y2) > 1) {
-                if (y1 - y2 == 2) {
-                    if (y1 == 7) {
-                        isLegal = 1;
-                    }
-                }
-                break;
-            }
-
-            // check for diagonal attack
-            if (x2 != x1) {
-                if ((abs(x2 - x1) == 1) && (y2 - y1 == 1) &&
-                    !(is_square_empty(x2, y2, board))) { // check that piece exists
-                        isLegal = 1;
-                }
-                break;
-            }
+            isLegal = check_valid_move_pawn(x1, y1, x2, y2, thisPieceColor, board); break;
+        case 'N':   // Knight
+            isLegal = 0;
     }
     return isLegal;
+}
+
+int check_valid_move_pawn(int x1, int y1, int x2, int y2, int thisPieceColor, int** board) {
+    // check if moved backwards (illegal)
+    if ((thisPieceColor == WHITE && (y2 - y1) < 1) ||
+        (thisPieceColor == BLACK && (y1 - y2) < 1)) {
+        return 0;
+    }
+
+    // check if only moved forwards by one space (legal)
+    if (x2 - x1 == 0 && ((thisPieceColor == WHITE && (y2 - y1) == 1) ||
+                        (thisPieceColor == BLACK && (y1 - y2) == 1)) &&
+                        !(check_for_collision(x1, y1, x2, y2, board))) {
+        return 1;
+    }
+
+    // check if on second (relative) rank for first double move
+    if (x2 - x1 == 0 && ((thisPieceColor == WHITE && (y2 - y1) > 1) ||
+                        (thisPieceColor == BLACK && (y1 - y2) > 1)) &&
+                        !(check_for_collision(x1, y1, x2, y2, board))) {
+
+        if (thisPieceColor == WHITE && (y2 - y1) == 2 && y1 == 2) {  // is white pawn moving two from rank 2
+            return 1;
+        }
+        if (thisPieceColor == BLACK && (y1 - y2) == 2 && y1 == 7) {  // is black pawn moving two from rank 7
+            return 1;
+        }
+        return 0;
+    }
+
+    // check for diagonal attack
+    if (x2 != x1) {
+        if ((abs(x2 - x1) == 1) && (y2 - y1 == 1) &&
+            !(is_square_empty(x2, y2, board))) { // check that piece exists
+                return 1;
+        }
+        return 0;
+    }
+    return 0;
 }
 
 int check_for_collision(int x1, int y1, int x2, int y2, int** board) {

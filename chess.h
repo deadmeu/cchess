@@ -14,6 +14,7 @@ typedef struct Game Game;
 void handle_input(Game*);
 int is_move_legal(int, int, int, int, Game*);
 int is_piece_move_legal(int, int, int, int, int**);
+int check_valid_move_pawn(int, int, int, int, int, int**);
 int check_for_collision(int, int, int, int, int**);
 int is_square_empty(int, int, int**);
 void process_game(Game*);
